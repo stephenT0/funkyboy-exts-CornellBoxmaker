@@ -87,6 +87,8 @@ class CornellBoxWindow(ui.Window):
                         #         ui.Spacer(width=1)
 
                 ui.Spacer(width=0,height=0)
+
+#scale sliders for cornell box xform
                 self._slider_model_x = ui.SimpleFloatModel()
                 self._slider_model_y = ui.SimpleFloatModel()
                 self._slider_model_z = ui.SimpleFloatModel()
