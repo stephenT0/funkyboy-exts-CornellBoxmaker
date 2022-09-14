@@ -226,7 +226,6 @@ class CornellBoxWindow(ui.Window):
     def destroy(self) -> None:
         self._change_info_path_subscription = None
         self._color_changed_subs = None
-        self._path_changed_sub = None
         return super().destroy()
 
     def on_shutdown(self):
