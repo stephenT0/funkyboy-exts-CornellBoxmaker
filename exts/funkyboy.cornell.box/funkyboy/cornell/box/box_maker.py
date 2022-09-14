@@ -6,46 +6,76 @@ from pxr import Gf, Sdf, Usd
 class BoxMaker:
     def __init__(self) -> None:
         self._stage:Usd.Stage = omni.usd.get_context().get_stage()
-        omni.kit.commands.execute('DeletePrims', paths=["/World/Looks", "/World/Cornell_Box", "/World/defaultLight"])
-        
-
-        
+        omni.kit.commands.execute('DeletePrims', paths=["/World/CB_Looks", "/World/Cornell_Box", "/World/defaultLight"])
+   
         self.Create_Box()
         
+    def Create_Panel(self):
+        plane_prim_path = omni.usd.get_stage_next_free_path(self._stage, self.geom_xform_path.AppendPath("Plane"), False)
+        omni.kit.commands.execute('CreateMeshPrimWithDefaultXform',prim_type='Plane')
+        omni.kit.commands.execute('MovePrim',
+            path_from='/World/Plane',
+            path_to=plane_prim_path)        
+       
+        mtl_path = Sdf.Path(omni.usd.get_stage_next_free_path(self._stage, self.looks_scope_path.AppendPath("OmniPBR"), False))
+        omni.kit.commands.execute('CreateMdlMaterialPrim',
+            mtl_url='OmniPBR.mdl',
+            mtl_name='OmniPBR',
+            mtl_path=str(mtl_path))
+
+        
+        omni.kit.commands.execute('BindMaterial',
+            prim_path=plane_prim_path,
+            material_path=str(mtl_path),
+            strength=['strongerThanDescendants'])
+    
+
+
+
+        plane_prim = self._stage.GetPrimAtPath(plane_prim_path)
+        plane_prim.GetAttribute("xformOp:scale").Set(Gf.Vec3d(4,4,4))
+
+        shader_prim = self._stage.GetPrimAtPath(mtl_path.AppendPath("Shader"))
+        mtl_color_attr = shader_prim.CreateAttribute("inputs:diffuse_color_constant", Sdf.ValueTypeNames.Color3f)
+        mtl_color_attr.Set((0.9, 0.9, 0.9)) 
+        return plane_prim       
+
+
+
     def Create_Box(self):
 
         with omni.kit.undo.group():
 
             self.geom_xform_path = Sdf.Path(omni.usd.get_stage_next_free_path(self._stage, "/World/Cornell_Box", False))
-            self.looks_xform_path = Sdf.Path(omni.usd.get_stage_next_free_path(self._stage, "/World/Looks", False))
+            self.looks_scope_path = Sdf.Path(omni.usd.get_stage_next_free_path(self._stage, "/World/CB_Looks", False))
             self.geom_xform_path2 = Sdf.Path(omni.usd.get_stage_next_free_path(self._stage, "/World/Cornell_Box/Panels", False))
             omni.kit.commands.execute('CreatePrimWithDefaultXform', prim_type='Xform', prim_path=str(self.geom_xform_path))
             omni.kit.commands.execute('CreatePrimWithDefaultXform', prim_type='Xform', prim_path=str(self.geom_xform_path2))
-            omni.kit.commands.execute('CreatePrimWithDefaultXform', prim_type='Xform', prim_path=str(self.looks_xform_path))
+            omni.kit.commands.execute('CreatePrimWithDefaultXform', prim_type='Scope', prim_path=str(self.looks_scope_path))
 
 
 
-            #create floor
+#create floor
             panel = self.Create_Panel()
-            panel.GetAttribute("xformOp:scale").Set(Gf.Vec3d(4,4,15))
+            panel.GetAttribute("xformOp:scale").Set(Gf.Vec3d( 4, 4, 15))
             
-            #create back wall
+#create back wall
             panel = self.Create_Panel()
             panel.GetAttribute("xformOp:rotateXYZ").Set(Gf.Vec3d(90, 0, 90))
             panel.GetAttribute("xformOp:translate").Set(Gf.Vec3d(0, 200, -400))
             
 
-            #create front wall 
+#create front wall 
             # panel = self.Create_Panel()
             # panel.GetAttribute("xformOp:rotateXYZ").Set(Gf.Vec3d(90, 0, 90))
             # panel.GetAttribute("xformOp:translate").Set(Gf.Vec3d(0, 100, 100))
             
-            #create ceiling 
+#create ceiling 
             panel = self.Create_Panel()
             panel.GetAttribute("xformOp:translate").Set(Gf.Vec3d(0, 400, 0))
             panel.GetAttribute("xformOp:scale").Set(Gf.Vec3d(4, 4, 15))
             
-            #create colored wall 1
+#create colored wall 1
             panel = self.Create_Panel() 
             panel.GetAttribute("xformOp:rotateXYZ").Set(Gf.Vec3d(0, 0, 90))
             panel.GetAttribute("xformOp:translate").Set(Gf.Vec3d(-200, 200, 0))
@@ -54,13 +84,13 @@ class BoxMaker:
 
 
             
-            #create colored wall 2
+#create colored wall 2
             panel = self.Create_Panel()
             panel.GetAttribute("xformOp:rotateXYZ").Set(Gf.Vec3d(0, 0, 90))
             panel.GetAttribute("xformOp:translate").Set(Gf.Vec3d(200, 200, 0))
             panel.GetAttribute("xformOp:scale").Set(Gf.Vec3d(4, 4, 15))      
 
-            #move panels
+#move panels
 
 
             omni.kit.commands.execute('MovePrim',
@@ -83,28 +113,28 @@ class BoxMaker:
                 path_from='/World/Cornell_Box/Plane_04',
                 path_to='/World/Cornell_Box/Panels/Plane_04')
                         
-            #make wall red
+#make wall red
             omni.kit.commands.execute('ChangeProperty',
-                prop_path=Sdf.Path('/World/Looks/OmniPBR_03/Shader.inputs:diffuse_color_constant'),
+                prop_path=Sdf.Path('/World/CB_Looks/OmniPBR_03/Shader.inputs:diffuse_color_constant'),
                 value=Gf.Vec3f(1.0, 0.0, 0.0),
                 prev=Gf.Vec3f(0.9, 0.9, 0.9))
 
 
-            #make wall green
+#make wall green
             omni.kit.commands.execute('ChangeProperty',
-                prop_path=Sdf.Path('/World/Looks/OmniPBR_04/Shader.inputs:diffuse_color_constant'),
+                prop_path=Sdf.Path('/World/CB_Looks/OmniPBR_04/Shader.inputs:diffuse_color_constant'),
                 value=Gf.Vec3f(0.0, 1.0, 0.2),
                 prev=Gf.Vec3f(0.9, 0.9, 0.9))
 
 
-    #create rectangle light
+#create rectangle light
 
             light_prim_path = omni.usd.get_stage_next_free_path(self._stage, self.geom_xform_path.AppendPath("RectLight"), False)
             omni.kit.commands.execute('CreatePrim',prim_type='RectLight', attributes={'width': 150, 'height': 100, 'intensity': 20000})
 
             omni.kit.commands.execute('ChangeProperty',
                 prop_path=Sdf.Path('/World/RectLight.xformOp:translate'),
-                value=Gf.Vec3d(0.0, 399.90001, 125),
+                value=Gf.Vec3d(0.0, 399.9000, 125),
                 prev=Gf.Vec3d(0.0, 0.0, 0.0))
 
 
@@ -124,12 +154,13 @@ class BoxMaker:
                 path_to='/World/Cornell_Box/RectLight')
 
             light_prim = self._stage.GetPrimAtPath(light_prim_path)
+# visible light
             #light_prim.GetAttribute("xformOp:scale").Set(Gf.Vec3d(4,4,4))
             light_prim.CreateAttribute("visibleInPrimaryRay", Sdf.ValueTypeNames.Bool).Set(True)
-            #light_prim.GetAttribute("visibleInPrimaryRay").Set(True)
 
 
-    #create Camera
+
+#create Camera
             omni.kit.commands.execute('CreatePrimWithDefaultXform',
                 prim_type='Camera',
                 attributes={'focusDistance': 400, 'focalLength': 27.5})
@@ -145,7 +176,7 @@ class BoxMaker:
                 path_from='/World/Camera',
                 path_to='/World/Cornell_Box/Camera')
 
-    #Create Cubes
+#Create Cubes
         
             omni.kit.commands.execute('CreateMeshPrimWithDefaultXform',
                 prim_type='Cube')
@@ -172,7 +203,7 @@ class BoxMaker:
 
 
             omni.kit.commands.execute('BindMaterial',
-                material_path='/World/Looks/OmniPBR',
+                material_path='/World/CB_Looks/OmniPBR',
                 prim_path=['/World/Cube'],
                 strength=['weakerThanDescendants'])
 
@@ -265,94 +296,3 @@ class BoxMaker:
             omni.kit.commands.execute('MovePrim',
                 path_from='/World/Cube_02',
                 path_to='/World/Cornell_Box/Cube_02')
-
-
-#creating panels + adding a basic white omniPBR material
-
-
-    def Create_Panel(self):
-        plane_prim_path = omni.usd.get_stage_next_free_path(self._stage, self.geom_xform_path.AppendPath("Plane"), False)
-        omni.kit.commands.execute('CreateMeshPrimWithDefaultXform',prim_type='Plane')
-        omni.kit.commands.execute('MovePrim',
-            path_from='/World/Plane',
-            path_to=plane_prim_path)        
-       
-        mtl_path = Sdf.Path(omni.usd.get_stage_next_free_path(self._stage, self.looks_xform_path.AppendPath("OmniPBR"), False))
-        omni.kit.commands.execute('CreateMdlMaterialPrim',
-            mtl_url='OmniPBR.mdl',
-            mtl_name='OmniPBR',
-            mtl_path=str(mtl_path))
-
-        
-        omni.kit.commands.execute('BindMaterial',
-            prim_path=plane_prim_path,
-            material_path=str(mtl_path),
-            strength=['strongerThanDescendants'])
-    
-
-
-
-        plane_prim = self._stage.GetPrimAtPath(plane_prim_path)
-        plane_prim.GetAttribute("xformOp:scale").Set(Gf.Vec3d(4,4,4))
-
-        shader_prim = self._stage.GetPrimAtPath(mtl_path.AppendPath("Shader"))
-        mtl_color_attr = shader_prim.CreateAttribute("inputs:diffuse_color_constant", Sdf.ValueTypeNames.Color3f)
-        mtl_color_attr.Set((0.9, 0.9, 0.9)) 
-        return plane_prim       
-
-
-
-        # omni.kit.commands.execute('MovePrim',
-        #     path_from='/World/Plane',
-        #     path_to='/World/Cornell_Box/Plane')
-
-        # omni.kit.commands.execute('MovePrim',
-        #     path_from='/World/Cornell_Box/Plane',
-        #     path_to='/World/Cornell_Box/Panel',)
-
-
-        # omni.kit.commands.execute('CopyPrim',
-        #     path_from='/World/Looks/OmniPBR',
-        #     path_to=None,
-        #     duplicate_layers=False,
-        #     combine_layers=False,
-        #     exclusive_select=False,
-        #     flatten_references=False)
-
-
-
-
-#import omni.kit.commands
-
-#omni.kit.commands.execute('CreatePrimWithDefaultXform',
-#	prim_type='Xform',
-#	attributes={},
-#	select_new_prim=False)
-
-
-
-#        tx_scale_attr = shader_prim.CreateAttribute("inputs:texture_scale", Sdf.ValueTypeNames.Float2)
-#        tx_scale_attr.Set((3.0, 1.0))
-
-
-#tx_scale_attr = shader_prim.GetAttribute("inputs:texture_scale").Set(Gf.Vec2f(2.0, 1.0))
-
-
-#diffuse_color_constant
-
-
-
-#omni.kit.commands.execute('ChangeProperty',
-#	prop_path=Sdf.Path('/World/Looks/OmniPBR/Shader.inputs:diffuse_color_constant'),
-#	value=Gf.Vec3f(0.8999999761581421, 0.8999999761581421, 0.8999999761581421),
-#	prev=Gf.Vec3f(0.20000000298023224, 0.20000000298023224, 0.20000000298023224))
-
-
-
-
-#omni.kit.commands.execute('ChangeProperty',
-#	prop_path=Sdf.Path('/World/Looks/OmniPBR/Shader.inputs:texture_scale'),
-#	value=Gf.Vec2f(2.0, 1.0),
-#	prev=Gf.Vec2f(1.0, 1.0))
-
-

@@ -26,8 +26,8 @@ class CornellBoxWindow(ui.Window):
         self._change_info_path_subscription = None
         self._change_info_path_subscription_2 = None
         self._stage = omni.usd.get_context().get_stage()
-        self._OmniPBR_Path_03 = "/World/Looks/OmniPBR_03/Shader.inputs:diffuse_color_constant"
-        self._OmniPBR_Path_04 =  "/World/Looks/OmniPBR_04/Shader.inputs:diffuse_color_constant" 
+        self._OmniPBR_Path_03 = "/World/CB_Looks/OmniPBR_03/Shader.inputs:diffuse_color_constant"
+        self._OmniPBR_Path_04 = "/World/CB_Looks/OmniPBR_04/Shader.inputs:diffuse_color_constant" 
         self.frame.set_build_fn(self._build_window)
 
 #subscribe mat 1
@@ -73,7 +73,7 @@ class CornellBoxWindow(ui.Window):
                         
                         with ui.HStack(height=0, spacing=SPACING):
                                 ui.Label("colored wall 2: ", height=0, width=0)  
-                                self._color_model_2 = ui.ColorWidget(0.0, 0.0, 0.9, height=0).model
+                                self._color_model_2 = ui.ColorWidget(0.0, 0.9, 0.2, height=0).model
                                 for item in self._color_model_2.get_item_children():
                                     component = self._color_model_2.get_item_value_model(item)
                                     self._color_changed_subs_2.append(component.subscribe_value_changed_fn(self._on_color_changed_2))
