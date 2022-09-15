@@ -158,7 +158,9 @@ class BoxMaker:
             #light_prim.GetAttribute("xformOp:scale").Set(Gf.Vec3d(4,4,4))
             light_prim.CreateAttribute("visibleInPrimaryRay", Sdf.ValueTypeNames.Bool).Set(True)
 
-
+            # omni.kit.commands.execute('MovePrim',
+            #     path_from='/World/Cornell_Box/RectLight',
+            #     path_to='/World/Cornell_Box/Panels/RectLight')
 
 #create Camera
             omni.kit.commands.execute('CreatePrimWithDefaultXform',

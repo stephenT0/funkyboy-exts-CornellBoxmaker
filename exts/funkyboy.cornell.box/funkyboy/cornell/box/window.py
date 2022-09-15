@@ -128,7 +128,7 @@ class CornellBoxWindow(ui.Window):
                             ui.Spacer(width=5)
                             ui.Label("Box Height: ", height=0, width=0)
                             #ui.Spacer(width=5)
-                            ui.FloatSlider(self._slider_model_y,  min=1.0, max=10, step=0.05)
+                            ui.FloatSlider(self._slider_model_y,  min=0.1, max=10, step=0.05)
                             #ui.Spacer(width=10)
 
                         def update_scale_y(prim_name, value):
@@ -138,6 +138,13 @@ class CornellBoxWindow(ui.Window):
                             scale_attr = cube_prim.GetAttribute("xformOp:scale")
                             scale = scale_attr.Get()
                             scale_attr.Set(Gf.Vec3d(scale[0], value, scale[2]))
+
+                            usd_context = omni.usd.get_context()
+                            stage = usd_context.get_stage()
+                            light_prim = stage.GetPrimAtPath("/World/Cornell_Box/RectLight")
+                            trans_attr = light_prim.GetAttribute("xformOp:translate")
+                            trans = trans_attr.Get()
+                            trans_attr.Set(Gf.Vec3d(trans[0], ((399.9) * value), trans[2]))
 
 
 
