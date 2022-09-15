@@ -13,3 +13,7 @@ Manual installation:
 2. Extract and place into a directory of your choice
 3. Go into: Extension Manager -> Gear Icon -> Extension Search Path
 4. Add a custom search path ending with: \funkyboy-exts-CornellBoxmaker-master\exts
+
+## Acknowledgments 
+
+Thanks to the Nvidia Omniverse Discord for helping me make this extension. In particular AshleyG and Mati.  
