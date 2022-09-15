@@ -7,3 +7,7 @@ To do:
 -overall stability and usability 
 -improve UI
 
+issues:
+-takes 3 clicks to close window
+-reliant on a World xform to work
+-color widgets not reliable after a new scene is created 

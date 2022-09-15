@@ -11,7 +11,7 @@ SPACING = 4
 
 class CornellBoxWindow(ui.Window):
     def __init__(self, title, menu_path):
-        super().__init__(title, width=450, height=300)
+        super().__init__(title, width=450, height=280)
         self._menu_path = menu_path
         self.set_visibility_changed_fn(self._on_visibility_changed)
         
@@ -46,6 +46,7 @@ class CornellBoxWindow(ui.Window):
             self._change_info_path_subscription_2 = omni.usd.get_watcher().subscribe_to_change_info_path(
                     attr_path_2, self._on_mtl_attr_changed_2)        
 
+#main ui Window
     def _build_window(self):
         
         with self.frame:
@@ -55,14 +56,14 @@ class CornellBoxWindow(ui.Window):
                     BoxMaker()
 
                 with ui.HStack(height=0, spacing=SPACING):
-                        ui.Label("Start Here: ", height=0, width=0)
+                        ui.Label("Start Here: ", height=40, width=0)
                         ui.Button("Make Box", clicked_fn=lambda: on_click()) 
                                     
                                     
-                with ui.CollapsableFrame("Color", name="group"):
+                with ui.CollapsableFrame("Color", name="group", height=50):
                     with ui.VStack(height=0, spacing=SPACING):           
                         with ui.HStack(height=0, spacing=SPACING):
-                                ui.Label("colored wall 1: ", height=0, width=0)
+                                ui.Label("Colored Wall #1: ", height=0, width=0)
                                 self._color_model = ui.ColorWidget(0.9, 0.0, 0.0, height=0).model
                                 for item in self._color_model.get_item_children():
                                     component = self._color_model.get_item_value_model(item)
@@ -72,7 +73,7 @@ class CornellBoxWindow(ui.Window):
                         self._path_model = self._OmniPBR_Path_03                        
                         
                         with ui.HStack(height=0, spacing=SPACING):
-                                ui.Label("colored wall 2: ", height=0, width=0)  
+                                ui.Label("Colored Wall #2: ", height=0, width=0)  
                                 self._color_model_2 = ui.ColorWidget(0.0, 0.9, 0.2, height=0).model
                                 for item in self._color_model_2.get_item_children():
                                     component = self._color_model_2.get_item_value_model(item)
@@ -93,11 +94,11 @@ class CornellBoxWindow(ui.Window):
                 self._slider_model_y = ui.SimpleFloatModel()
                 self._slider_model_z = ui.SimpleFloatModel()
                 self._source_prim_model = ui.SimpleStringModel()  
-                with ui.CollapsableFrame("Scale", name="group"):
+                with ui.CollapsableFrame("Scale", name="group", height=100):
                     with ui.VStack(height=0, spacing=SPACING):
                         with ui.HStack():
                             ui.Spacer(width=5)
-                            ui.Label("box width: ", height=0, width=0)
+                            ui.Label("Box Width: ", height=0, width=0)
                             #ui.Spacer(width=5)
                             #ui.FloatDrag(self._slider_model,  min=0.1, max=5)
                             ui.FloatSlider(self._slider_model_x,  min=0.1, max=10, step=0.05)
@@ -125,7 +126,7 @@ class CornellBoxWindow(ui.Window):
 
                         with ui.HStack():
                             ui.Spacer(width=5)
-                            ui.Label("box height: ", height=0, width=0)
+                            ui.Label("Box Height: ", height=0, width=0)
                             #ui.Spacer(width=5)
                             ui.FloatSlider(self._slider_model_y,  min=1.0, max=10, step=0.05)
                             #ui.Spacer(width=10)
@@ -151,7 +152,7 @@ class CornellBoxWindow(ui.Window):
 
                         with ui.HStack():
                             ui.Spacer(width=5)
-                            ui.Label("box length: ", height=0, width=0)
+                            ui.Label("Box Length: ", height=0, width=0)
                             #ui.Spacer(width=5)
                             ui.FloatSlider(self._slider_model_z,  min=0.1, max=10, step=0.05)
                             #ui.Spacer(width=10)
@@ -172,6 +173,7 @@ class CornellBoxWindow(ui.Window):
                                 lambda m, #the following is where we change from self.model to self._source_prim_model
                                 p=self._source_prim_model: update_scale_z(p, m.as_float))
 
+#functions for color picker
 
     def _on_mtl_attr_changed(self, path):
         color_attr = self._stage.GetAttributeAtPath(path)
