@@ -4,6 +4,8 @@ import omni.kit.commands
 import omni.usd
 from pxr import Gf, Sdf
 from .box_maker import BoxMaker
+from omni.ui import color as cl
+from omni.ui import constant as fl
 
 WINDOW_TITLE = "Cornell Box Maker"
 
@@ -14,7 +16,7 @@ class CornellBoxWindow(ui.Window):
         super().__init__(title, width=450, height=280)
         self._menu_path = menu_path
         self.set_visibility_changed_fn(self._on_visibility_changed)
-        
+        #self._build_window(self)
 
 #color widget variables
         self._color_model = None
@@ -49,9 +51,10 @@ class CornellBoxWindow(ui.Window):
 #main ui Window
     def _build_window(self):
         
-        with self.frame:
+        #with self.frame:
+        with ui.ScrollingFrame():
             
-            with ui.VStack():
+            with ui.VStack(height=0):
                 def on_click():
                     BoxMaker()
 
@@ -94,7 +97,7 @@ class CornellBoxWindow(ui.Window):
                 self._slider_model_y = ui.SimpleFloatModel()
                 self._slider_model_z = ui.SimpleFloatModel()
                 self._source_prim_model = ui.SimpleStringModel()  
-                with ui.CollapsableFrame("Scale", name="group", height=100):
+                with ui.CollapsableFrame("Scale", name="group", height=100,):
                     with ui.VStack(height=0, spacing=SPACING):
                         with ui.HStack():
                             ui.Spacer(width=5)
@@ -139,8 +142,8 @@ class CornellBoxWindow(ui.Window):
                             scale = scale_attr.Get()
                             scale_attr.Set(Gf.Vec3d(scale[0], value, scale[2]))
 
-                            usd_context = omni.usd.get_context()
-                            stage = usd_context.get_stage()
+                            #usd_context = omni.usd.get_context()
+                            #stage = usd_context.get_stage()
                             light_prim = stage.GetPrimAtPath("/World/Cornell_Box/RectLight")
                             trans_attr = light_prim.GetAttribute("xformOp:translate")
                             trans = trans_attr.Get()
