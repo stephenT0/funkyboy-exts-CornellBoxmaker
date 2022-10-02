@@ -11,12 +11,18 @@ WINDOW_TITLE = "Cornell Box Maker"
 
 SPACING = 4
 
+
+combo_sub = None
+options = ["Classic", "SIGGRAPH 1984", "NVIDIA Omniverse"]
+
 class CornellBoxWindow(ui.Window):
     def __init__(self, title, menu_path):
         super().__init__(title, width=450, height=280)
         self._menu_path = menu_path
         self.set_visibility_changed_fn(self._on_visibility_changed)
-        #self._build_window(self)
+        self.frame.set_build_fn(self._build_window)
+
+        
 
 #color widget variables
         self._color_model = None
@@ -30,7 +36,7 @@ class CornellBoxWindow(ui.Window):
         self._stage = omni.usd.get_context().get_stage()
         self._OmniPBR_Path_03 = "/World/CB_Looks/OmniPBR_03/Shader.inputs:diffuse_color_constant"
         self._OmniPBR_Path_04 = "/World/CB_Looks/OmniPBR_04/Shader.inputs:diffuse_color_constant" 
-        self.frame.set_build_fn(self._build_window)
+        
 
 #subscribe mat 1
         attr_path = self._OmniPBR_Path_03
@@ -48,6 +54,8 @@ class CornellBoxWindow(ui.Window):
             self._change_info_path_subscription_2 = omni.usd.get_watcher().subscribe_to_change_info_path(
                     attr_path_2, self._on_mtl_attr_changed_2)        
 
+#combox group variables 
+        self.combo_sub = None
 #main ui Window
     def _build_window(self):
         
@@ -84,11 +92,58 @@ class CornellBoxWindow(ui.Window):
                                     #ui.FloatDrag(component)
 
                         self._path_model_2 = self._OmniPBR_Path_04            
-#disabled checkbox group
-                        # with ui.HStack(height=0, spacing=SPACING):
-                        #         ui.Label("Select preset style:",  height=0, width=0)
-                        #         ui.ComboBox(0, "Classic", "SIGGRAPH 1984", "NVIDIA Omniverse", height=0)
-                        #         ui.Spacer(width=1)
+
+#combobox group
+    
+                        with ui.HStack(height=0, spacing=SPACING):
+                            ui.Label("Select Preset Style:",  height=0, width=0)
+                            
+                            
+                            
+                            combo_model: ui.AbstractItemModel = ui.ComboBox(0, *options).model
+
+                            def combo_changed(item_model: ui.AbstractItemModel, item: ui.AbstractItem):
+                                value_model = item_model.get_item_value_model(item)
+                                current_index = value_model.as_int
+                                option = options[current_index] 
+                                #print(f"Selected '{option}' at index {current_index}.")                           
+                                if option == "Classic":
+                                     mtl_path_1 = "/World/CB_Looks/OmniPBR_03/Shader"
+                                     shader_prim_1 = self._stage.GetPrimAtPath(mtl_path_1)
+                                     mtl_color_attr_1 = shader_prim_1.CreateAttribute("inputs:diffuse_color_constant", Sdf.ValueTypeNames.Color3f)
+                                     mtl_color_attr_1.Set((0.9, 0.0, 0.0))
+
+                                     mtl_path_2 = "/World/CB_Looks/OmniPBR_04/Shader"
+                                     shader_prim_2 = self._stage.GetPrimAtPath(mtl_path_2)
+                                     mtl_color_attr_2 = shader_prim_2.CreateAttribute("inputs:diffuse_color_constant", Sdf.ValueTypeNames.Color3f)
+                                     mtl_color_attr_2.Set((0.0, 0.9, 0.2))
+
+                                if option == "SIGGRAPH 1984":
+                                     mtl_path_1 = "/World/CB_Looks/OmniPBR_03/Shader"
+                                     shader_prim_1 = self._stage.GetPrimAtPath(mtl_path_1)
+                                     mtl_color_attr_1 = shader_prim_1.CreateAttribute("inputs:diffuse_color_constant", Sdf.ValueTypeNames.Color3f)
+                                     mtl_color_attr_1.Set((0.9, 0.0, 0.0))
+
+                                     mtl_path_2 = "/World/CB_Looks/OmniPBR_04/Shader"
+                                     shader_prim_2 = self._stage.GetPrimAtPath(mtl_path_2)
+                                     mtl_color_attr_2 = shader_prim_2.CreateAttribute("inputs:diffuse_color_constant", Sdf.ValueTypeNames.Color3f)
+                                     mtl_color_attr_2.Set((0.0, 0.0, 0.9))
+
+                                if option == "NVIDIA Omniverse":
+                                     mtl_path_1 = "/World/CB_Looks/OmniPBR_03/Shader"
+                                     shader_prim_1 = self._stage.GetPrimAtPath(mtl_path_1)
+                                     mtl_color_attr_1 = shader_prim_1.CreateAttribute("inputs:diffuse_color_constant", Sdf.ValueTypeNames.Color3f)
+                                     mtl_color_attr_1.Set((0.069, 0.069, 0.069))
+
+                                     mtl_path_2 = "/World/CB_Looks/OmniPBR_04/Shader"
+                                     shader_prim_2 = self._stage.GetPrimAtPath(mtl_path_2)
+                                     mtl_color_attr_2 = shader_prim_2.CreateAttribute("inputs:diffuse_color_constant", Sdf.ValueTypeNames.Color3f)
+                                     mtl_color_attr_2.Set((0.4, 0.8, 0.0))
+
+                            
+                            self.combo_sub = combo_model.subscribe_item_changed_fn(combo_changed)
+
+                            ui.Spacer(width=1)
 
                 ui.Spacer(width=0,height=0)
 
@@ -182,6 +237,9 @@ class CornellBoxWindow(ui.Window):
                             self._slider_subscription_z = self._slider_model_z.subscribe_value_changed_fn(
                                 lambda m, #the following is where we change from self.model to self._source_prim_model
                                 p=self._source_prim_model: update_scale_z(p, m.as_float))
+
+#dock
+        super().dock_in_window("Environments", ui.DockPosition.SAME)  
 
 #functions for color picker
 
