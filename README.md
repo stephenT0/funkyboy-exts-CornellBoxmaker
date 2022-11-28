@@ -2,12 +2,6 @@
 
 Make a Cornell Box that is customizable in real time.
 
-Extension currently works best started from a new scene with the extension freshly loaded. 
-
-Known Issues:
-1. reliant on a World xform to work
-2. color widgets not reliable after a new scene is created 
-
 ## Adding This Extension
 
 To add this extension to your Omniverse app:

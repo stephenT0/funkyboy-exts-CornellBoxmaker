@@ -134,6 +134,7 @@ class CornellBoxWindow(ui.Window):
                                      shader_prim_1 = self._stage.GetPrimAtPath(mtl_path_1)
                                      mtl_color_attr_1 = shader_prim_1.CreateAttribute("inputs:diffuse_color_constant", Sdf.ValueTypeNames.Color3f)
                                      mtl_color_attr_1.Set((0.069, 0.069, 0.069))
+                                    #  self._color_model.Set((0.069, 0.069, 0.069))
 
                                      mtl_path_2 = "/World/CB_Looks/OmniPBR_04/Shader"
                                      shader_prim_2 = self._stage.GetPrimAtPath(mtl_path_2)

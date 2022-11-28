@@ -6,7 +6,8 @@ from pxr import Gf, Sdf, Usd
 class BoxMaker:
     def __init__(self) -> None:
         self._stage:Usd.Stage = omni.usd.get_context().get_stage()
-        omni.kit.commands.execute('DeletePrims', paths=["/World/CB_Looks", "/World/Cornell_Box", "/World/defaultLight"])
+        omni.kit.commands.execute('DeletePrims', paths=["/World/CB_Looks", "/World/Cornell_Box", "/World/defaultLight", "/Environment"])
+
    
         self.Create_Box()
         
@@ -45,7 +46,6 @@ class BoxMaker:
     def Create_Box(self):
 
         with omni.kit.undo.group():
-
             self.geom_xform_path = Sdf.Path(omni.usd.get_stage_next_free_path(self._stage, "/World/Cornell_Box", False))
             self.looks_scope_path = Sdf.Path(omni.usd.get_stage_next_free_path(self._stage, "/World/CB_Looks", False))
             self.geom_xform_path2 = Sdf.Path(omni.usd.get_stage_next_free_path(self._stage, "/World/Cornell_Box/Panels", False))
@@ -123,14 +123,14 @@ class BoxMaker:
 #make wall green
             omni.kit.commands.execute('ChangeProperty',
                 prop_path=Sdf.Path('/World/CB_Looks/OmniPBR_04/Shader.inputs:diffuse_color_constant'),
-                value=Gf.Vec3f(0.0, 1.0, 0.2),
+                value=Gf.Vec3f(0.0, 0.9, 0.2),
                 prev=Gf.Vec3f(0.9, 0.9, 0.9))
 
 
 #create rectangle light
 
             light_prim_path = omni.usd.get_stage_next_free_path(self._stage, self.geom_xform_path.AppendPath("RectLight"), False)
-            omni.kit.commands.execute('CreatePrim',prim_type='RectLight', attributes={'width': 150, 'height': 100, 'intensity': 20000})
+            omni.kit.commands.execute('CreatePrim',prim_type='RectLight', attributes={'width': 150, 'height': 100, 'intensity': 17500})
 
             omni.kit.commands.execute('ChangeProperty',
                 prop_path=Sdf.Path('/World/RectLight.xformOp:translate'),
@@ -154,15 +154,13 @@ class BoxMaker:
                 path_to='/World/Cornell_Box/RectLight')
 
             light_prim = self._stage.GetPrimAtPath(light_prim_path)
-# visible light
+#Visible light
             #light_prim.GetAttribute("xformOp:scale").Set(Gf.Vec3d(4,4,4))
             light_prim.CreateAttribute("visibleInPrimaryRay", Sdf.ValueTypeNames.Bool).Set(True)
 
-            # omni.kit.commands.execute('MovePrim',
-            #     path_from='/World/Cornell_Box/RectLight',
-            #     path_to='/World/Cornell_Box/Panels/RectLight')
 
-#create Camera
+
+#Create Camera
             omni.kit.commands.execute('CreatePrimWithDefaultXform',
                 prim_type='Camera',
                 attributes={'focusDistance': 400, 'focalLength': 27.5})
