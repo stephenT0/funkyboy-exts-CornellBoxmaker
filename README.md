@@ -6,7 +6,7 @@ Make a Cornell Box that is customizable in real time.
 
 To add this extension to your Omniverse app:
 1. Go into: Extension Manager -> Gear Icon -> Extension Search Path
-2. Add this as a search path: `git://github.com//stephenT0/funkyboy-exts-CornellBoxmaker?branch=main&dir=exts`
+2. Add this as a search path: `git://github.com/stephenT0/funkyboy-exts-CornellBoxmaker?branch=main&dir=exts`
 
 Manual installation:
 1. Download Zip
